@@ -3,15 +3,19 @@ import * as fs from "fs";
 import * as path from "path";
 import ignore, { Ignore } from "ignore";
 
+// This function is called when the extension is activated
 export function activate(context: vscode.ExtensionContext) {
-    let disposable = vscode.commands.registerCommand(
+    // Register the command to generate folder structure
+    const disposable = vscode.commands.registerCommand(
         "extension.generateFolderStructure",
         () => {
             const workspaceFolders = vscode.workspace.workspaceFolders;
 
+            // Ensure there's an open workspace folder
             if (workspaceFolders) {
                 const folderPath = workspaceFolders[0].uri.fsPath;
 
+                // Show progress notification while generating folder structure
                 vscode.window.withProgress(
                     {
                         location: vscode.ProgressLocation.Notification,
@@ -23,10 +27,12 @@ export function activate(context: vscode.ExtensionContext) {
                             message: `Generating Folder Structure...`,
                         });
 
-                        clearLogFile(folderPath); // Clear and prepare the gfs_logs.txt file
-                        createGfsIgnoreFile(folderPath); // Ensure .gfs_ignore exists
-                        createGfsIncludeFile(folderPath); // Ensure .gfs_include exists
+                        // Prepare log and ignore files
+                        clearLogFile(folderPath); // Clear the log file
+                        createGfsIgnoreFile(folderPath); // Create .gfs_ignore if it doesn't exist
+                        createGfsIncludeFile(folderPath); // Create .gfs_include if it doesn't exist
 
+                        // Generate the folder structure and write it to a file
                         const structure = generateFileStructure(
                             folderPath,
                             calculateIgnoreRules(folderPath)
@@ -45,31 +51,32 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
 
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(disposable); // Dispose of the command on extension deactivation
 }
 
+// Clears the gfs_logs.txt file and creates a new one
 function clearLogFile(directoryPath: string) {
     const docsPath = path.join(directoryPath, "docs", "gfs");
     const logFilePath = path.join(docsPath, "gfs_logs.txt");
 
     try {
         if (fs.existsSync(logFilePath)) {
-            fs.unlinkSync(logFilePath); // Remove if exists
+            fs.unlinkSync(logFilePath); // Remove existing log file
         }
-        // Create a new empty log file
-        fs.writeFileSync(logFilePath, "", "utf-8");
+        fs.writeFileSync(logFilePath, "", "utf-8"); // Create a new empty log file
     } catch (error: unknown) {
         console.error(`Failed to clear log file: ${getErrorMessage(error)}`);
     }
 }
 
+// Creates the .gfs_ignore file with default patterns if it doesn't exist
 function createGfsIgnoreFile(directoryPath: string) {
     const docsPath = path.join(directoryPath, "docs", "gfs");
     const gfsIgnorePath = path.join(docsPath, ".gfs_ignore");
 
     try {
         if (!fs.existsSync(docsPath)) {
-            fs.mkdirSync(docsPath, { recursive: true });
+            fs.mkdirSync(docsPath, { recursive: true }); // Create the gfs directory if it doesn't exist
         }
 
         if (!fs.existsSync(gfsIgnorePath)) {
@@ -77,8 +84,8 @@ function createGfsIgnoreFile(directoryPath: string) {
                 ".vs",
                 ".vscode",
                 "node_modules",
-				".git",
-				"gfs"
+                ".git",
+                "gfs",
             ];
             fs.writeFileSync(
                 gfsIgnorePath,
@@ -104,6 +111,7 @@ function createGfsIgnoreFile(directoryPath: string) {
     }
 }
 
+// Creates the .gfs_include file if it doesn't exist
 function createGfsIncludeFile(directoryPath: string) {
     const docsPath = path.join(directoryPath, "docs", "gfs");
     const gfsIncludePath = path.join(docsPath, ".gfs_include");
@@ -135,6 +143,7 @@ function createGfsIncludeFile(directoryPath: string) {
     }
 }
 
+// Calculates ignore rules based on .gitignore and .gfs_ignore files
 function calculateIgnoreRules(directoryPath: string): Ignore {
     const gitIgnorePath = path.join(directoryPath, ".gitignore");
     const gfsIgnorePath = path.join(
@@ -154,41 +163,59 @@ function calculateIgnoreRules(directoryPath: string): Ignore {
 
     // Collect include patterns from .gfs_include
     const _include_ig = ignore();
-    loadPatternsFromFile(gfsIncludePath, _include_ig, ((el:string)=>el.trim()));
+    loadPatternsFromFile(gfsIncludePath, _include_ig, (el: string) =>
+        el.trim()
+    );
 
-    // Load exclusion patterns first from .gitignore and .gfs_ignore
-    loadPatternsFromFile(gitIgnorePath, ig,((el:string)=>el.trim().replace(/\r$/, '')), _include_ig);
-    loadPatternsFromFile(gfsIgnorePath, ig, ((el:string)=>el.trim()),_include_ig);
+    // Load exclusion patterns from .gitignore and .gfs_ignore
+    loadPatternsFromFile(
+        gitIgnorePath,
+        ig,
+        (el: string) => el.trim().replace(/\r$/, ""),
+        _include_ig
+    );
+    loadPatternsFromFile(
+        gfsIgnorePath,
+        ig,
+        (el: string) => el.trim(),
+        _include_ig
+    );
 
-    // Return the tuple
-    return ig;
+    return ig; // Return the ignore rules
 }
 
+// Loads patterns from a file and adds them to the Ignore instance
 function loadPatternsFromFile(
     filePath: string,
     patterns: Ignore,
     cleanHandler: (el: string) => string,
-	include_patterns?: Ignore
+    include_patterns?: Ignore
 ) {
     if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, "utf-8");
-		const loadedPatterns = content
-			.split("\n")
-			.filter((line) => cleanHandler(line) !== "" && !line.startsWith("#"))
-			.map(e => cleanHandler(e));
+        const loadedPatterns = content
+            .split("\n")
+            .filter(
+                (line) => cleanHandler(line) !== "" && !line.startsWith("#")
+            )
+            .map(cleanHandler);
 
+        // Add patterns to the Ignore instance based on inclusion rules
         if (include_patterns) {
             loadedPatterns.forEach((pattern) => {
-                !include_patterns.ignores(pattern) && patterns.add(pattern);
+                if (!include_patterns.ignores(pattern)) {
+                    patterns.add(pattern);
+                }
             });
         } else {
-            patterns.add(loadedPatterns);
+            patterns.add(loadedPatterns); // Add all loaded patterns
         }
     } else {
         logMessage(`File does not exist: ${filePath}`, "ERROR");
     }
 }
 
+// Generates the folder structure as a string
 function generateFileStructure(
     directoryPath: string,
     ig: Ignore,
@@ -198,7 +225,7 @@ function generateFileStructure(
     let files: string[];
 
     try {
-        files = fs.readdirSync(directoryPath);
+        files = fs.readdirSync(directoryPath); // Read directory contents
     } catch (error: unknown) {
         logMessage(
             `Error reading directory ${directoryPath}: ${getErrorMessage(
@@ -209,18 +236,19 @@ function generateFileStructure(
         vscode.window.showErrorMessage(
             `GFS: Error reading directory: ${getErrorMessage(error)}`
         );
-        return null;
+        return null; // Return null on error
     }
 
-    const directories: string[] = [];
-    const filesList: string[] = [];
+    const directories: string[] = []; // Array to hold directory names
+    const filesList: string[] = []; // Array to hold file names
 
+    // Iterate through files to separate directories and files
     for (const file of files) {
         const filePath = path.join(directoryPath, file);
         let stat;
 
         try {
-            stat = fs.statSync(filePath);
+            stat = fs.statSync(filePath); // Get file stats
         } catch (error: unknown) {
             logMessage(
                 `Error getting stats for ${filePath}: ${getErrorMessage(
@@ -237,13 +265,12 @@ function generateFileStructure(
         }
 
         // Check if the file should be ignored
-        const shouldIgnore = ig.ignores(file);
-
-        if (shouldIgnore) {
+        if (ig.ignores(file)) {
             logMessage(`Ignoring: ${file}`, "INFO");
-            continue;
+            continue; // Skip ignored files
         }
 
+        // Sort directories and files into separate arrays
         if (stat.isDirectory()) {
             directories.push(file);
         } else if (stat.isFile()) {
@@ -255,76 +282,74 @@ function generateFileStructure(
     directories.sort();
     filesList.sort();
 
+    // Build the structure string with directories and files
     for (const dir of directories) {
-        structure += `${"  ".repeat(depth)}[${dir}]\n`;
+        structure += `${"  ".repeat(depth)}[${dir}]\n`; // Indent and add directory
         const subStructure = generateFileStructure(
             path.join(directoryPath, dir),
             ig,
             depth + 1
         );
         if (subStructure) {
-            structure += subStructure;
+            structure += subStructure; // Append subdirectory structure
         }
     }
 
     // Add files after directories
     for (const file of filesList) {
-        structure += `${"  ".repeat(depth)}- ${file}\n`;
+        structure += `${"  ".repeat(depth)}- ${file}\n`; // Indent and add file
     }
 
-    return structure;
+    return structure; // Return the complete structure
 }
 
+// Writes the generated structure to a file
 function writeToFile(content: string) {
-    const docsPath = path.join(
+    const filePath = path.join(
         vscode.workspace.workspaceFolders![0].uri.fsPath,
-        "docs"
+        "docs",
+        "project_structure.txt"
     );
-    const filePath = path.join(docsPath, "project_structure.txt");
 
     try {
-        fs.writeFileSync(filePath, content, "utf-8");
-        logMessage(`Folder Structure generated.`, "INFO");
+        fs.writeFileSync(filePath, content, "utf-8"); // Write content to file
+        logMessage(`Folder structure written to: ${filePath}`, "INFO");
         vscode.window.showInformationMessage(
             `GFS: Folder Structure generated.`
         );
     } catch (error: unknown) {
         logMessage(
-            `Error writing to project_structure.txt: ${getErrorMessage(error)}`,
+            `Error writing to file ${filePath}: ${getErrorMessage(error)}`,
             "ERROR"
         );
         vscode.window.showErrorMessage(
-            `GFS: Error while generating Structure: ${getErrorMessage(error)}`
+            `GFS: Error writing to file: ${getErrorMessage(error)}`
         );
     }
 }
 
-function logMessage(message: string, logType: "ERROR" | "INFO") {
-    const docsPath = path.join(
+// Logs messages to gfs_logs.txt
+function logMessage(message: string, level: "INFO" | "ERROR") {
+    const logFilePath = path.join(
         vscode.workspace.workspaceFolders![0].uri.fsPath,
         "docs",
-        "gfs"
+        "gfs",
+        "gfs_logs.txt"
     );
-    const logFilePath = path.join(docsPath, "gfs_logs.txt");
 
-    // Check if gfs_logs.txt exists and create if it doesn't
     try {
-        if (!fs.existsSync(logFilePath)) {
-            fs.writeFileSync(logFilePath, "", "utf-8"); // Create a new empty log file
-        }
-
-        const logMessage = `${new Date().toISOString()} [${logType}]: ${message}\n`;
-        fs.appendFileSync(logFilePath, logMessage, "utf-8");
+        const timestamp = new Date().toISOString();
+        const logEntry = `[${timestamp}] [${level}]: ${message}\n`;
+        fs.appendFileSync(logFilePath, logEntry, "utf-8"); // Append log entry
     } catch (error: unknown) {
         console.error(`Failed to write to log file: ${getErrorMessage(error)}`);
     }
 }
 
+// Helper function to get error messages from unknown types
 function getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-        return error.message;
-    }
-    return "An unknown error occurred";
+    return error instanceof Error ? error.message : String(error);
 }
 
+// This method is called when your extension is deactivated
 export function deactivate() {}

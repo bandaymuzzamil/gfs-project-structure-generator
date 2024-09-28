@@ -64,5 +64,7 @@
   "bugs": {
     "url": "https://github.com/your-username/project-structure-generator-pro/issues"
   },
-  "homepage": "https://github.com/your-username/project-structure-generator-pro#readme"
+  "homepage": "https://github.com/your-username/project-structure-generator-pro#readme",
+  "icon": "assets/images/icon.png",
+  "banner": "assets/images/banner.png"
 }

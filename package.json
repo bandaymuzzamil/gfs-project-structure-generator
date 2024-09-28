@@ -1,8 +1,8 @@
 {
-  "name": "project-structure-generator-pro",
-  "displayName": "Project Structure Generator Pro",
-  "description": "Generate the project structur of workspace as .txt file",
-  "version": "0.0.1",
+  "name": "gfs-project-structure-generator",
+  "displayName": "GFS (Generate Folder Structure)",
+  "description": "Generate the project structure of the workspace as a .txt file",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -14,8 +14,15 @@
   "contributes": {
     "commands": [
       {
-        "command": "project-structure-generator-pro.helloWorld",
-        "title": "Hello World"
+        "command": "extension.generateFolderStructure",
+        "title": "GFS: Generate"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.generateFolderStructure",
+        "key": "ctrl+shift+g",
+        "when": "editorTextFocus"
       }
     ]
   },
@@ -34,16 +41,30 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.93.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
+    "@types/vscode": "^1.93.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
-    "eslint": "^9.9.1",
-    "esbuild": "^0.23.1",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.5.4",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
-  }
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.23.1",
+    "eslint": "^9.9.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "ignore": "^6.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bandaymuzzamil/gfs-project-structure-generator.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bandaymuzzamil/gfs-project-structure-generator/issues"
+  },
+  "homepage": "https://github.com/bandaymuzzamil/gfs-project-structure-generator#readme",
+  "icon": "assets/images/icon.png",
+  "banner": "assets/images/banner.png"
 }

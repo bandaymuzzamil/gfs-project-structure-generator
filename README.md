@@ -1,71 +1,68 @@
-# project-structure-generator-pro README
+# GFS (Generate Folder Structure) Extension for Visual Studio Code
 
-This is the README for your extension "project-structure-generator-pro". After writing up a brief description, we recommend including the following sections.
+## Overview
+
+The GFS extension is designed to help users generate a structured overview of their project directories in Visual Studio Code. It provides functionality for ignoring specific files and directories, as well as logging actions taken by the extension, enhancing project management and organization.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Generate Folder Structure**: Quickly create a hierarchical view of your project's directory structure.
+- **Ignore Patterns**: Utilize `.gfs_ignore` and `.gfs_include` files to manage which files and directories should be excluded from the folder structure generation.
+- **Logging**: All actions and errors are logged in `gfs_logs.txt`, providing visibility into the extension's operations.
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage
 
-\!\[feature X\]\(images/feature-x.png\)
+### Command
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+To generate the folder structure, use the command:
 
-## Requirements
+```
+GFS: Generate
+```
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### Functionality
 
-## Extension Settings
+1. **Folder Structure Generation**:
+   - The extension scans the currently open workspace folder and generates a structured view of its contents.
+   - The generated structure will be saved to `project_structure.txt` under the `docs` directory.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+2. **Ignore and Include Patterns**:
+   - The extension supports two special files:
+     - **`.gfs_ignore`**: Lists patterns for files and directories to be ignored. By default, it includes common directories like `.git`, `node_modules`, and more. You can extend this list with additional patterns as needed.
+     - **`.gfs_include`**: Allows you to override the exclusion rules defined in `.gfs_ignore`. If a file matches a pattern in this file, it will be included regardless of other ignore rules.
 
-For example:
+3. **Logging**:
+   - Actions and errors are recorded in `gfs_logs.txt`. This file is cleared each time the command is run, ensuring that it only contains logs from the latest operation.
+   - The log entries include timestamps and severity levels (INFO or ERROR) to help you track the extension’s behavior.
 
-This extension contributes the following settings:
+### File Generation
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+When you run the command, the following files are created or updated in your workspace:
 
-## Known Issues
+- **`project_structure.txt`**: Contains the generated folder structure of your project.
+- **`.gfs_ignore`**: Created if it doesn’t already exist, containing default ignore patterns.
+- **`.gfs_include`**: Created if it doesn’t already exist, allowing you to specify which files to include.
+- **`gfs_logs.txt`**: Logs actions and errors that occur during execution.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## Installation
 
-## Release Notes
+1. Open Visual Studio Code.
+2. Go to the Extensions view (Ctrl+Shift+X).
+3. Search for `"GFS (Generate Folder Structure)"` and click "Install."
+4. Once installed, open a workspace folder to start using the extension.
 
-Users appreciate release notes as you update your extension.
+## Troubleshooting
 
-### 1.0.0
+If you encounter issues while using the extension:
 
-Initial release of ...
+- Check `gfs_logs.txt` for error messages and logs that can help identify problems.
+- Ensure that your workspace folder is correctly set and contains the expected files and directories.
+- Verify that your `.gfs_ignore` and `.gfs_include` files are correctly formatted.
 
-### 1.0.1
+## Contribution
 
-Fixed issue #.
+Feel free to contribute to the extension by opening issues or pull requests. Your feedback is highly appreciated!
 
-### 1.1.0
+## License
 
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+This extension is licensed under the MIT License. See the LICENSE file for more details.

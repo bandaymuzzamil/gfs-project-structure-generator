@@ -1,7 +1,7 @@
 {
   "name": "project-structure-generator-pro",
-  "displayName": "Project Structure Generator Pro",
-  "description": "Generate the project structur of workspace as .txt file",
+  "displayName": "GFS (Generate Folder Structure)",
+  "description": "Generate the project structure of the workspace as a .txt file",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.93.0"
@@ -55,5 +55,14 @@
   },
   "dependencies": {
     "ignore": "^6.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/project-structure-generator-pro.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/your-username/project-structure-generator-pro/issues"
+  },
+  "homepage": "https://github.com/your-username/project-structure-generator-pro#readme"
 }

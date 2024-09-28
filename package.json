@@ -58,13 +58,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/gfs-project-structure-generator.git"
+    "url": "https://github.com/bandaymuzzamil/gfs-project-structure-generator.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/your-username/gfs-project-structure-generator/issues"
+    "url": "https://github.com/bandaymuzzamil/gfs-project-structure-generator/issues"
   },
-  "homepage": "https://github.com/your-username/gfs-project-structure-generator#readme",
+  "homepage": "https://github.com/bandaymuzzamil/gfs-project-structure-generator#readme",
   "icon": "assets/images/icon.png",
   "banner": "assets/images/banner.png"
 }

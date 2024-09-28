@@ -7,7 +7,7 @@ Thank you for considering contributing to the GFS extension! We appreciate your 
 1. **Fork the Repository**: Start by forking the repository to your own GitHub account.
 2. **Clone Your Fork**: Clone your forked repository to your local machine.
    ```bash
-   git clone https://github.com/your-username/gfs-project-structure-generator.git
+   git clone https://github.com/bandaymuzzamil/gfs-project-structure-generator.git
    ```
 3. **Create a Branch**: Create a new branch for your feature or bug fix.
    ```bash

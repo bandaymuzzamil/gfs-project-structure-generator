@@ -1,5 +1,6 @@
 {
   "name": "gfs-project-structure-generator",
+  "publisher": "MuzzamilBanday",
   "displayName": "GFS (Generate Folder Structure)",
   "description": "Generate the project structure of the workspace as a .txt file",
   "version": "1.0.0",
